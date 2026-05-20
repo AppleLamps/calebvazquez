@@ -1,0 +1,116 @@
+.floating-controls-wrapper {
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 80;
+  width: auto;
+  max-width: calc(100% - 2rem);
+}
+
+.floating-controls {
+  background-color: var(--reader-control-bg);
+  border: 1px solid var(--reader-control-border);
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  box-shadow: var(--shadow-lg);
+  transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+}
+
+.control-section {
+  display: flex;
+  align-items: center;
+  gap: 0.28rem;
+}
+
+.control-divider {
+  width: 1px;
+  height: 20px;
+  background-color: var(--border-color);
+}
+
+.control-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 0.85rem;
+  line-height: 1;
+  padding: 0;
+}
+
+.control-btn i {
+  display: block;
+  line-height: 1;
+}
+
+.control-btn:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-primary);
+}
+
+.control-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--accent-color);
+}
+
+/* Page Indicator specific inputs */
+.page-number-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+#current-page-input {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-align: center;
+  width: 44px;
+  padding: 4px 2px;
+  border-radius: 4px;
+}
+
+#current-page-input::-webkit-inner-spin-button, 
+#current-page-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+#current-page-input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.total-pages-label {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+/* Zoom Label styling */
+.zoom-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  width: 48px;
+  text-align: center;
+}
+

@@ -1,0 +1,132 @@
+/* -------------------------------------------------------------
+   RESPONSIVENESS AND COLLAPSED STATES
+   ------------------------------------------------------------- */
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 220px;
+    --header-height: 60px;
+    --highlights-sidebar-width: min(300px, 82vw);
+  }
+  
+  .app-header {
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .header-left {
+    flex: 1 1 100%;
+    gap: 0.55rem;
+  }
+
+  .header-center {
+    display: none;
+  }
+
+  .header-right {
+    flex: 1 1 100%;
+    justify-content: flex-start;
+    gap: 0.45rem;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .search-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  #search-input {
+    width: 100%;
+    min-width: 0;
+  }
+  
+  #search-input:focus {
+    width: 100%;
+  }
+
+  .layout-toggle-group span {
+    display: none;
+  }
+
+  .layout-toggle-group button {
+    width: 34px;
+    height: 30px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .vertical-divider {
+    display: none;
+  }
+
+  .document-title {
+    font-size: 1rem;
+  }
+
+  .status-badge {
+    display: none;
+  }
+
+  .slide-nav-overlay {
+    display: none;
+  }
+
+  .viewer-viewport {
+    padding: 0.85rem 0.75rem 5.4rem;
+    align-items: flex-start;
+  }
+
+  .viewer-viewport.presentation-mode .pages-container {
+    justify-content: flex-start;
+  }
+
+  .floating-controls {
+    padding: 0.45rem 0.55rem;
+    gap: 0.35rem;
+    max-width: 100%;
+  }
+
+  .zoom-controls, .action-controls {
+    display: none;
+  }
+  
+  .control-divider {
+    display: none;
+  }
+
+  .highlights-sidebar.collapsed {
+    margin-right: calc(-1 * var(--highlights-sidebar-width));
+  }
+}
+
+@media (max-width: 420px) {
+  .icon-btn {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+
+  .floating-controls-wrapper {
+    bottom: 14px;
+    max-width: calc(100% - 1rem);
+  }
+
+  .control-btn {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+  }
+}
+
+/* Fullscreen styling for presentation mode */
+:-webkit-full-screen .main-viewer {
+  width: 100vw;
+  height: 100vh;
+}
+
+:fullscreen .main-viewer {
+  width: 100vw;
+  height: 100vh;
+}

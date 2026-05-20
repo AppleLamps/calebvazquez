@@ -1,0 +1,233 @@
+/* -------------------------------------------------------------
+   VIEWPORT & PAGES CONTAINER
+   ------------------------------------------------------------- */
+.viewer-viewport {
+  flex: 1;
+  background-color: var(--bg-primary);
+  position: relative;
+  overflow: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 1.5rem 5.25rem;
+  scroll-behavior: smooth;
+}
+
+/* Viewport Modes */
+.viewer-viewport.presentation-mode {
+  overflow: hidden; /* Hide scrollbars in single slide mode */
+}
+
+.viewer-viewport.scroll-mode {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2.5rem;
+  padding-bottom: 7rem;
+}
+
+/* Pages Container */
+.pages-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.viewer-viewport.scroll-mode .pages-container {
+  height: auto;
+  gap: 2.5rem;
+}
+
+/* Slide Container (Page Wrapper) */
+.page-wrapper {
+  position: relative;
+  box-shadow: var(--shadow-xl);
+  border-radius: 6px;
+  overflow: hidden;
+  background-color: var(--surface-paper);
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  transform-origin: center center;
+  border: 1px solid var(--border-color);
+  max-width: 100%;
+}
+
+/* In presentation mode, page is forced into viewport */
+.viewer-viewport.presentation-mode .page-wrapper {
+  max-height: 100%;
+}
+
+.viewer-viewport.presentation-mode .page-wrapper.active {
+  display: block;
+}
+
+/* Canvas & Text Layer sizing */
+.page-wrapper canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+/* PDF.js Text layer overlay */
+.textLayer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1.0;
+  mix-blend-mode: multiply;
+  transition: opacity 0.2s;
+  user-select: text;
+  cursor: text;
+}
+
+.textLayer:hover, .textLayer:focus {
+  opacity: 0.35;
+}
+
+/* Standard styling override for selected text */
+.textLayer ::selection {
+  background: var(--accent-color) !important;
+  color: transparent !important;
+}
+
+/* PDF.js search highlights */
+.textLayer .highlight {
+  background-color: rgba(253, 224, 71, 0.4) !important; /* Yellow with opacity */
+  border-radius: 2px;
+  box-shadow: 0 0 4px rgba(253, 224, 71, 0.6);
+}
+
+.textLayer .highlight.selected {
+  background-color: rgba(249, 115, 22, 0.5) !important; /* Orange with opacity */
+  box-shadow: 0 0 6px rgba(249, 115, 22, 0.8);
+}
+
+/* User-saved highlights (persisted in localStorage) */
+.textLayer .user-highlight {
+  background-color: rgba(224, 170, 64, 0.5) !important;
+  color: transparent;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(185, 133, 43, 0.4);
+  cursor: text;
+  padding: 0;
+}
+
+.textLayer .user-highlight:hover {
+  background-color: rgba(224, 170, 64, 0.68) !important;
+  box-shadow: 0 0 0 1px rgba(185, 133, 43, 0.62);
+}
+
+/* Floating highlight toolbar */
+.highlight-toolbar {
+  position: fixed;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  background: var(--reader-control-bg);
+  border: 1px solid var(--reader-control-border);
+  border-radius: 6px;
+  box-shadow: var(--shadow-lg);
+}
+
+.highlight-toolbar.hidden {
+  display: none;
+}
+
+.highlight-toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.75rem;
+  border: none;
+  border-radius: 4px;
+  background: var(--accent-color);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s, transform 0.15s;
+}
+
+.highlight-toolbar-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.highlight-toolbar-btn i {
+  font-size: 0.85rem;
+}
+
+.highlight-toast {
+  position: fixed;
+  bottom: 6.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10001;
+  padding: 0.6rem 1rem;
+  background: var(--reader-control-bg);
+  border: 1px solid var(--reader-control-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+}
+
+.highlight-toast.hidden {
+  display: none;
+}
+
+/* Slide Navigation Overlay Buttons (Presentation Mode Only) */
+.slide-nav-overlay {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 90px;
+  background-color: rgba(25, 23, 18, 0.72);
+  border: 1px solid var(--reader-control-border);
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10;
+  transition: opacity 0.2s, background-color 0.2s, transform 0.2s;
+  border-radius: 4px;
+  opacity: 0; /* Hidden by default, show on hover of viewport */
+}
+
+.viewer-viewport:hover .slide-nav-overlay {
+  opacity: 0.7;
+}
+
+.slide-nav-overlay:hover {
+  background-color: var(--surface-raised);
+  opacity: 1 !important;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.slide-nav-overlay.prev {
+  left: 20px;
+}
+
+.slide-nav-overlay.next {
+  right: 20px;
+}
+
+/* Hide presentation controls in scroll mode */
+.viewer-viewport.scroll-mode .slide-nav-overlay {
+  display: none !important;
+}
+
