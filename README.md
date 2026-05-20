@@ -1,4 +1,4 @@
-# Cain Clark Manifesto - Archive Reader
+# Caleb Vazquez Manifesto - Archive Reader
 
 An interactive static web viewer for reading a PDF presentation as slides. Built with vanilla JavaScript, [PDF.js](https://mozilla.github.io/pdf.js/), and a modular codebase. No build step is required.
 
@@ -51,7 +51,7 @@ The PDF is rendered in the browser for viewing only. There is no download button
 ## Requirements
 
 - A modern browser with JavaScript enabled.
-- The PDF file **`Cain Clark Manifesto.pdf`** in the project root (same folder as `index.html`). The filename is configured in `js/core/config.js` if you need to change it.
+- The PDF file **`Caleb Vazquez Manifesto.pdf`** in the project root (same folder as `index.html`). The filename is configured in `js/core/config.js` if you need to change it.
 
 ## Run locally
 
@@ -98,7 +98,7 @@ website-mani/
 |   |-- search/             # Full-document search
 |   |-- highlights/         # Save/load highlights, sidebar, selection UI
 |   `-- ui/                 # Events, sidebars, fullscreen
-`-- Cain Clark Manifesto.pdf
+`-- Caleb Vazquez Manifesto.pdf
 ```
 
 ## Tech stack

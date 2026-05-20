@@ -1,4 +1,4 @@
-export const PDF_PATH = 'Cain Clark Manifesto.pdf';
+export const PDF_PATH = 'Caleb Vazquez Manifesto.pdf';
 export const THUMBNAIL_SCALE = 0.25;
 export const DEFAULT_SCALE = 1.25;
 export const MIN_SCALE = 0.5;
