@@ -4,6 +4,17 @@ import { createPageElement, renderPage } from './page.js';
 import { updateControls } from './navigation.js';
 import { updateActiveThumbnail } from './thumbnails.js';
 
+let scrollRafScheduled = false;
+
+function scheduleScrollRendering() {
+  if (scrollRafScheduled) return;
+  scrollRafScheduled = true;
+  requestAnimationFrame(() => {
+    scrollRafScheduled = false;
+    handleScrollRendering();
+  });
+}
+
 export async function setupLayoutMode() {
   elements.pagesContainer.innerHTML = '';
   state.renderingQueue.forEach((task) => task.cancel());
@@ -44,7 +55,9 @@ export function setupScrollObserver() {
   );
 
   document.querySelectorAll('.page-wrapper').forEach((el) => state.observer.observe(el));
-  elements.viewerViewport.addEventListener('scroll', handleScrollRendering);
+
+  elements.viewerViewport.removeEventListener('scroll', scheduleScrollRendering);
+  elements.viewerViewport.addEventListener('scroll', scheduleScrollRendering, { passive: true });
 }
 
 export function handleScrollRendering() {

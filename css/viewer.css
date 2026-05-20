@@ -52,6 +52,7 @@
   transform-origin: center center;
   border: 1px solid var(--border-color);
   max-width: 100%;
+  contain: layout paint;
 }
 
 /* In presentation mode, page is forced into viewport */
