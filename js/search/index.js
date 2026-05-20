@@ -4,7 +4,24 @@ import { escapeRegExp } from '../utils.js';
 import { navigateToPage } from '../pdf/navigation.js';
 import { triggerZoomChange } from '../pdf/zoom.js';
 
+function waitForIdle() {
+  return new Promise((resolve) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(resolve, { timeout: 500 });
+    } else {
+      setTimeout(resolve, 0);
+    }
+  });
+}
+
 export async function buildSearchIndex() {
+  if (state.searchIndexPromise) return state.searchIndexPromise;
+
+  state.searchIndexPromise = buildSearchIndexPages();
+  return state.searchIndexPromise;
+}
+
+async function buildSearchIndexPages() {
   state.textIndex = [];
   for (let i = 1; i <= state.totalPages; i++) {
     try {
@@ -15,10 +32,19 @@ export async function buildSearchIndex() {
     } catch (e) {
       console.warn(`Could not index text for page ${i}`, e);
     }
+    await waitForIdle();
   }
+
+  state.searchIndexReady = true;
+  return state.textIndex;
 }
 
-export function handleSearch(query) {
+export function warmSearchIndex() {
+  if (!state.pdfDoc || state.searchIndexReady || state.searchIndexPromise) return;
+  buildSearchIndex();
+}
+
+export async function handleSearch(query) {
   state.searchQuery = query.trim().toLowerCase();
   state.searchResults = [];
   state.activeSearchMatchIdx = -1;
@@ -29,6 +55,17 @@ export function handleSearch(query) {
     elements.searchNavContainer.classList.add('hidden');
     triggerZoomChange();
     return;
+  }
+
+  if (!state.searchIndexReady) {
+    elements.searchResultsCount.classList.remove('hidden');
+    elements.searchNavContainer.classList.add('hidden');
+    elements.searchResultsCount.textContent = 'Indexing...';
+    await buildSearchIndex();
+
+    if (state.searchQuery !== elements.searchInput.value.trim().toLowerCase()) {
+      return handleSearch(elements.searchInput.value);
+    }
   }
 
   state.textIndex.forEach((pageItem) => {

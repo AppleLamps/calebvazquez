@@ -3,7 +3,7 @@ import { elements } from '../core/dom.js';
 import { navigateToPage } from '../pdf/navigation.js';
 import { setupLayoutMode } from '../pdf/layout.js';
 import { handleZoomIn, handleZoomOut, handleZoomFit, calculateDefaultZoom, triggerZoomChange } from '../pdf/zoom.js';
-import { handleSearch, navigateSearch } from '../search/index.js';
+import { handleSearch, navigateSearch, warmSearchIndex } from '../search/index.js';
 import { setTheme } from '../theme.js';
 import { toggleSidebar } from './slides-sidebar.js';
 import { toggleFullscreen } from './fullscreen.js';
@@ -57,6 +57,7 @@ export function setupEventListeners() {
   elements.presentationModeBtn?.addEventListener('click', toggleFullscreen);
 
   elements.searchInput?.addEventListener('input', (e) => handleSearch(e.target.value));
+  elements.searchInput?.addEventListener('focus', warmSearchIndex);
   elements.searchPrevBtn?.addEventListener('click', () => navigateSearch('prev'));
   elements.searchNextBtn?.addEventListener('click', () => navigateSearch('next'));
 

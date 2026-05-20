@@ -3,31 +3,74 @@ import { state } from '../core/state.js';
 import { elements } from '../core/dom.js';
 import { navigateToPage } from './navigation.js';
 
+const THUMBNAIL_BATCH_SIZE = 2;
+
+function waitForIdle() {
+  return new Promise((resolve) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(resolve, { timeout: 500 });
+    } else {
+      setTimeout(resolve, 0);
+    }
+  });
+}
+
+function createThumbnailShell(num) {
+  const thumbItem = document.createElement('div');
+  thumbItem.className = `thumbnail-item ${num === state.pageNum ? 'active' : ''}`;
+  thumbItem.setAttribute('data-page-num', num);
+  thumbItem.id = `thumb-item-${num}`;
+  thumbItem.addEventListener('click', () => navigateToPage(num));
+
+  const loadingText = document.createElement('div');
+  loadingText.className = 'thumbnail-loading';
+  loadingText.textContent = `Slide ${num}`;
+  thumbItem.appendChild(loadingText);
+
+  const pageNumLabel = document.createElement('div');
+  pageNumLabel.className = 'thumbnail-number';
+  pageNumLabel.textContent = num;
+  thumbItem.appendChild(pageNumLabel);
+
+  elements.thumbnailContainer.appendChild(thumbItem);
+  return { thumbItem, loadingText };
+}
+
 export async function renderThumbnails() {
+  if (state.thumbnailsStarted || !state.pdfDoc) return;
+
+  state.thumbnailsStarted = true;
   elements.thumbnailContainer.innerHTML = '';
 
+  const shells = new Map();
   for (let i = 1; i <= state.totalPages; i++) {
-    const thumbItem = document.createElement('div');
-    thumbItem.className = `thumbnail-item ${i === state.pageNum ? 'active' : ''}`;
-    thumbItem.setAttribute('data-page-num', i);
-    thumbItem.id = `thumb-item-${i}`;
+    shells.set(i, createThumbnailShell(i));
+  }
 
-    const loadingText = document.createElement('div');
-    loadingText.className = 'thumbnail-loading';
-    loadingText.textContent = `Slide ${i}`;
-    thumbItem.appendChild(loadingText);
+  updateActiveThumbnail();
 
-    const pageNumLabel = document.createElement('div');
-    pageNumLabel.className = 'thumbnail-number';
-    pageNumLabel.textContent = i;
-    thumbItem.appendChild(pageNumLabel);
+  const pageOrder = [
+    state.pageNum,
+    ...Array.from({ length: state.totalPages }, (_, index) => index + 1).filter(
+      (pageNum) => pageNum !== state.pageNum
+    )
+  ];
 
-    elements.thumbnailContainer.appendChild(thumbItem);
-    renderSingleThumbnail(i, thumbItem, loadingText);
+  for (let i = 0; i < pageOrder.length; i += THUMBNAIL_BATCH_SIZE) {
+    await waitForIdle();
+    const batch = pageOrder.slice(i, i + THUMBNAIL_BATCH_SIZE);
+    await Promise.all(
+      batch.map((pageNum) => {
+        const shell = shells.get(pageNum);
+        return renderSingleThumbnail(pageNum, shell.thumbItem, shell.loadingText);
+      })
+    );
   }
 }
 
 async function renderSingleThumbnail(num, container, loaderEl) {
+  if (container.querySelector('canvas')) return;
+
   try {
     const page = await state.pdfDoc.getPage(num);
     const viewport = page.getViewport({ scale: THUMBNAIL_SCALE });
@@ -39,7 +82,6 @@ async function renderSingleThumbnail(num, container, loaderEl) {
 
     loaderEl.remove();
     container.insertBefore(canvas, container.firstChild);
-    container.addEventListener('click', () => navigateToPage(num));
   } catch (error) {
     console.error(`Error rendering thumbnail for page ${num}:`, error);
   }
@@ -53,4 +95,3 @@ export function updateActiveThumbnail() {
     activeThumb.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
-

@@ -25,8 +25,15 @@ export function createPageElement(num) {
   elements.pagesContainer.appendChild(pageWrapper);
 }
 
+function isStaleRender(num, token) {
+  return state.pageRenderToken.get(num) !== token;
+}
+
 export async function renderPage(num) {
-  if (state.renderingQueue.has(num)) return;
+  const token = (state.pageRenderToken.get(num) ?? 0) + 1;
+  state.pageRenderToken.set(num, token);
+
+  state.renderingQueue.get(num)?.cancel();
 
   const pageWrapper = document.getElementById(`page-wrapper-${num}`);
   if (!pageWrapper) return;
@@ -37,6 +44,8 @@ export async function renderPage(num) {
 
   try {
     const page = await state.pdfDoc.getPage(num);
+    if (isStaleRender(num, token)) return;
+
     const viewport = page.getViewport({ scale: state.zoomScale });
 
     pageWrapper.style.width = `${viewport.width}px`;
@@ -44,7 +53,7 @@ export async function renderPage(num) {
     pageWrapper.style.aspectRatio = `${viewport.width}/${viewport.height}`;
     pageWrapper.style.setProperty('--scale-factor', viewport.scale);
 
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
     canvas.width = viewport.width * dpr;
     canvas.height = viewport.height * dpr;
     canvas.style.width = '100%';
@@ -54,7 +63,7 @@ export async function renderPage(num) {
     const renderTask = page.render({ canvasContext: ctx, viewport });
     state.renderingQueue.set(num, renderTask);
     await renderTask.promise;
-    state.renderingQueue.delete(num);
+    if (isStaleRender(num, token)) return;
 
     textLayer.innerHTML = '';
     textLayer.style.width = `${viewport.width}px`;
@@ -68,12 +77,17 @@ export async function renderPage(num) {
       textDivs: []
     });
     await textRenderTask.promise;
+    if (isStaleRender(num, token)) return;
 
     applySavedHighlights(num);
     if (state.searchQuery) highlightPageText(num);
   } catch (error) {
     if (error.name === 'RenderingCancelledException') return;
     console.error(`Error rendering page ${num}:`, error);
+  } finally {
+    if (!isStaleRender(num, token)) {
+      state.renderingQueue.delete(num);
+    }
   }
 }
 

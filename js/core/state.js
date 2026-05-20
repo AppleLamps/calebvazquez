@@ -12,12 +12,16 @@ export const state = {
   highlightsSidebarCollapsed: true,
 
   textIndex: [],
+  searchIndexReady: false,
+  searchIndexPromise: null,
   searchQuery: '',
   searchResults: [],
   activeSearchMatchIdx: -1,
 
   renderingQueue: new Map(),
+  pageRenderToken: new Map(),
   textQueue: new Map(),
+  thumbnailsStarted: false,
   observer: null,
   resizeTimeout: null,
 

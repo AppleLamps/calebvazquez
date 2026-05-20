@@ -4,8 +4,6 @@ import { elements } from '../core/dom.js';
 import { pdfjsLib } from '../core/pdfjs.js';
 import { calculateDefaultZoom } from './zoom.js';
 import { setupLayoutMode } from './layout.js';
-import { renderThumbnails } from './thumbnails.js';
-import { buildSearchIndex } from '../search/index.js';
 
 export async function loadPDF() {
   try {
@@ -41,13 +39,9 @@ export async function loadPDF() {
       console.warn('Could not retrieve PDF title metadata:', metaErr);
     }
 
-    setTimeout(async () => {
-      elements.loadingOverlay.classList.add('fade-out');
-      await calculateDefaultZoom();
-      setupLayoutMode();
-      renderThumbnails();
-      buildSearchIndex();
-    }, 400);
+    await calculateDefaultZoom();
+    await setupLayoutMode();
+    elements.loadingOverlay.classList.add('fade-out');
   } catch (error) {
     console.error('Error loading PDF document: ', error);
     elements.loaderPercentage.textContent = 'Failed to load PDF.';

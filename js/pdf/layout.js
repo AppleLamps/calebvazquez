@@ -4,16 +4,17 @@ import { createPageElement, renderPage } from './page.js';
 import { updateControls } from './navigation.js';
 import { updateActiveThumbnail } from './thumbnails.js';
 
-export function setupLayoutMode() {
+export async function setupLayoutMode() {
   elements.pagesContainer.innerHTML = '';
   state.renderingQueue.forEach((task) => task.cancel());
   state.renderingQueue.clear();
+  state.pageRenderToken.clear();
 
   if (state.layoutMode === 'presentation') {
     elements.viewerViewport.classList.remove('scroll-mode');
     elements.viewerViewport.classList.add('presentation-mode');
     createPageElement(state.pageNum);
-    renderPage(state.pageNum);
+    await renderPage(state.pageNum);
   } else {
     elements.viewerViewport.classList.remove('presentation-mode');
     elements.viewerViewport.classList.add('scroll-mode');

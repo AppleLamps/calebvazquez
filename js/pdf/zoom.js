@@ -34,6 +34,7 @@ export function triggerZoomChange() {
 
   state.renderingQueue.forEach((task) => task.cancel());
   state.renderingQueue.clear();
+  state.pageRenderToken.clear();
 
   if (state.layoutMode === 'presentation') {
     renderPage(state.pageNum);
