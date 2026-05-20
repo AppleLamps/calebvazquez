@@ -29,9 +29,35 @@ export async function setupLayoutMode() {
   } else {
     elements.viewerViewport.classList.remove('presentation-mode');
     elements.viewerViewport.classList.add('scroll-mode');
-    for (let i = 1; i <= state.totalPages; i++) createPageElement(i);
+
+    // Pre-size wrappers using page 1's dimensions. Without this, empty
+    // wrappers shrink to the placeholder canvas (~300×150) so multiple
+    // pages stack inside the viewport and the IntersectionObserver
+    // mis-detects what's visible until something forces a relayout
+    // (which is why tapping the already-active scroll-mode button
+    // appeared to "fix" rendering on mobile).
+    let placeholderWidth = null;
+    let placeholderHeight = null;
+    if (state.pdfDoc) {
+      const firstPage = await state.pdfDoc.getPage(1);
+      const placeholderViewport = firstPage.getViewport({ scale: state.zoomScale });
+      placeholderWidth = placeholderViewport.width;
+      placeholderHeight = placeholderViewport.height;
+    }
+
+    for (let i = 1; i <= state.totalPages; i++) {
+      createPageElement(i);
+      if (placeholderWidth) {
+        const wrapper = document.getElementById(`page-wrapper-${i}`);
+        wrapper.style.width = `${placeholderWidth}px`;
+        wrapper.style.height = `${placeholderHeight}px`;
+        wrapper.style.aspectRatio = `${placeholderWidth}/${placeholderHeight}`;
+      }
+    }
+
     setupScrollObserver();
     handleScrollRendering();
+    renderPage(state.pageNum);
   }
 
   updateControls();
