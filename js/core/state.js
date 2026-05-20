@@ -6,7 +6,7 @@ export const state = {
   totalPages: 1,
   zoomScale: DEFAULT_SCALE,
   zoomMode: 'fit',
-  layoutMode: 'presentation',
+  layoutMode: 'scroll',
   theme: 'dark',
   sidebarCollapsed: true,
   highlightsSidebarCollapsed: true,
